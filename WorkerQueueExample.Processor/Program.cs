@@ -10,6 +10,12 @@ namespace WorkerQueueExample.Processor
     {
         static void Main(string[] args)
         {
+            var mailLocation = "C:\\LogsAndReports\\Processed\\";
+            Console.WriteLine("Please enter the sublocation you want the file to drop:");
+            var sublocation = Console.ReadLine();
+
+            Directory.CreateDirectory($"{mailLocation}\\{sublocation}");
+
             var factory = new ConnectionFactory() { HostName = "localhost" };
             using (var connection = factory.CreateConnection())
             {
@@ -26,14 +32,14 @@ namespace WorkerQueueExample.Processor
                     {
                         var body = ea.Body;
                         var message = Encoding.UTF8.GetString(body);
-                        File.WriteAllBytes(@"C:\LogsAndReports\Processed\file1", body);
-                        Console.WriteLine(" [x] Received {0}", message);
+                        File.WriteAllBytes($"{mailLocation}\\{sublocation}\\file_{Guid.NewGuid()}.txt", body);
+                        Console.WriteLine("[x] Received {0}", message);
                     };
                     channel.BasicConsume(queue: "hello",
                                          autoAck: true,
                                          consumer: consumer);
 
-                    Console.WriteLine(" Press [enter] to exit.");
+                    Console.WriteLine("Press [enter] to exit.");
                     Console.ReadLine();
                 }
             }
